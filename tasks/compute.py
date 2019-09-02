@@ -10,5 +10,6 @@ dynamodb = boto3.resource('dynamodb')
 
 
 def compute(event, context):
-    print(event)
+    for r in event['Records']:
+        print(r)
     return
