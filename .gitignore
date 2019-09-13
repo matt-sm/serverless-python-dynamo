@@ -1,3 +1,6 @@
 .serverless
 *.pyc
 *.pyo
+.dynamodb
+node_modules
+venv

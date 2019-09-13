@@ -8,89 +8,31 @@ provider:
   profile: serverless
 
   environment:
-    TODO_DYNAMODB_TABLE: ${self:service}-todo-${opt:stage, self:provider.stage}
     TASK_DYNAMODB_TABLE: ${self:service}-task-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:*      
       Resource: 
-        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TODO_DYNAMODB_TABLE}"
         - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TASK_DYNAMODB_TABLE}"
 
 functions:
-  create:
-    handler: todos/create.create
-    events:
-      - http:
-          path: todos
-          method: post
-          cors: true
-
   createTask:
-    handler: tasks/create.create
+    handler: api/functions/task.create
     events:
       - http:
           path: tasks
           method: post
           cors: true
-
-  list:
-    handler: todos/list.list
+  getTask:
+    handler: api/functions/task.get
     events:
       - http:
-          path: todos
+          path: tasks/{id}
           method: get
           cors: true
-
-  get:
-    handler: todos/get.get
-    events:
-      - http:
-          path: todos/{id}
-          method: get
-          cors: true
-
-  update:
-    handler: todos/update.update
-    events:
-      - http:
-          path: todos/{id}
-          method: put
-          cors: true
-
-  delete:
-    handler: todos/delete.delete
-    events:
-      - http:
-          path: todos/{id}
-          method: delete
-          cors: true
-  compute:
-    handler: tasks/compute.compute
-    events:
-      - stream:
-          type: dynamodb
-          arn:
-            Fn::GetAtt: [ TasksDynamoDbTable, StreamArn ]
 resources:
   Resources:
-    TodosDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.TODO_DYNAMODB_TABLE}
     TasksDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
@@ -109,3 +51,18 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.TASK_DYNAMODB_TABLE}
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-python-requirements
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true # create tables on start
+  pythonRequirements:
+    dockerizePip: non-linux
