@@ -4,3 +4,4 @@
 .dynamodb
 node_modules
 venv
+.vscode
