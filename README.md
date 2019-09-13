@@ -9,7 +9,7 @@ source ./venv/bin/activate
 
 pip3 install pip-tools
 pip-sync dev-requirements.txt requirements.txt
-
+```
 ## run tests
 ```
 serverless offline start
