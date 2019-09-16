@@ -18,20 +18,20 @@ class Task:
 
 
 class TaskDb(object):
-    def __init__(self, event):
-        if 'IS_OFFLINE' in event:
+    def __init__(self, isOffline: bool):
+        if isOffline:
             dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000/')
         else:
             dynamodb = boto3.resource('dynamodb')
 
         self.table = dynamodb.Table(os.environ['TASK_DYNAMODB_TABLE'])
     
-    def create(self):
+    def create(self) -> Task:
         task = Task()
         self.table.put_item(Item=asdict(task))
         return task
 
-    def get(self, id):
+    def get(self, id: int) -> Task:
         result = self.table.get_item(
             Key={
                 'id': id

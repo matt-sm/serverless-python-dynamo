@@ -1,3 +1,4 @@
 pytest
 wheel
 pylint
+mypy
