@@ -39,3 +39,24 @@ class TaskDb(object):
         )
 
         return from_dict(data_class=Task, data=result['Item'])
+
+    def update(self, id: int, status: str) -> Task:
+        timestamp = str(datetime.utcnow().timestamp())
+
+        result = self.table.update_item(
+            Key={
+                'id': id
+            },
+            ExpressionAttributeNames={
+                '#task_status': 'status',
+            },
+            ExpressionAttributeValues={
+            ':status': status,
+            ':updatedAt': timestamp,
+            },
+            UpdateExpression='SET #task_status = :status, ' 
+                                'updatedAt = :updatedAt',
+            ReturnValues='ALL_NEW',
+        )
+
+        return from_dict(data_class=Task, data=result['Attributes'])

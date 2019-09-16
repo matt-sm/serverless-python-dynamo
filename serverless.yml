@@ -31,6 +31,13 @@ functions:
           path: tasks/{id}
           method: get
           cors: true
+  updateTask:
+    handler: api/functions/task.update
+    events:
+      - http:
+          path: tasks/{id}
+          method: put
+          cors: true
 resources:
   Resources:
     TasksDynamoDbTable:
