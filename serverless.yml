@@ -38,6 +38,13 @@ functions:
           path: tasks/{id}
           method: put
           cors: true
+  sendEmail:
+    handler: api/functions/task.send
+    events:
+      - http:
+          path: email/send
+          method: post
+          cors: true
 resources:
   Resources:
     TasksDynamoDbTable:
