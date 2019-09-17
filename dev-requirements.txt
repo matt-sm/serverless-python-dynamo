@@ -2,3 +2,4 @@ pytest
 wheel
 pylint
 mypy
+black

@@ -39,7 +39,7 @@ functions:
           method: put
           cors: true
   sendEmail:
-    handler: api/functions/task.send
+    handler: api/functions/email.send
     events:
       - http:
           path: email/send
