@@ -6,6 +6,7 @@
     "python.formatting.provider": "black",
     "editor.formatOnSave": true,
     "python.linting.pylintArgs": [
-        "--enable=W0611"
+        "--enable=W0611",
+        "--disable=C0111",
     ]
 }

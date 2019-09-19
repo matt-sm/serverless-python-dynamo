@@ -1,27 +1,7 @@
-import json
 import boto3
-import logging
-from api.db.task import Task, TaskDb
-from typing import Any, Dict, NewType
 from botocore.exceptions import ClientError
-from api.functions import Event
 from pydantic import BaseModel, ValidationError
-import functools
-
-
-class Response(BaseModel):
-    statusCode: int = 200
-    body: str
-
-
-class BadRequest(BaseModel):
-    statusCode: int = 400
-    body: str
-
-
-class InternalError(BaseModel):
-    statusCode: int = 500
-    body: str
+from api.functions import Response, Error, api_data
 
 
 class EmailSender(BaseModel):
@@ -36,25 +16,13 @@ class EmailRequest(BaseModel):
     subject: str
 
 
-def api(func):
-    @functools.wraps(func)
-    def wrapper_decorator(*args, **kwargs):
-        # Do something before
-        value = func(*args, **kwargs)
-        # Do something after
-        return value.dict()
-
-    return wrapper_decorator
-
-
-@api
-def send(event: Event, context: Any) -> Response:
-    data = json.loads(event["body"])
+@api_data
+def send(data: dict) -> Response:
 
     try:
         request = EmailRequest(**data)
-    except ValidationError as e:
-        return BadRequest(body=e.json())
+    except ValidationError as ex:
+        return ex
 
     sender = f"{request.sender.name} <{request.sender.email}>"
 
@@ -62,7 +30,7 @@ def send(event: Event, context: Any) -> Response:
     client = boto3.client("ses", region_name="us-east-1")
 
     try:
-        response = client.send_email(
+        client.send_email(
             Destination={"ToAddresses": [request.recipient]},
             Message={
                 "Body": {"Text": {"Charset": charset, "Data": request.text}},
@@ -70,7 +38,7 @@ def send(event: Event, context: Any) -> Response:
             },
             Source=sender,
         )
-    except ClientError as e:
-        return InternalError(body=json.dumps({"error": e.response["Error"]["Message"]}))
+    except ClientError as ex:
+        return Error(code=500, message=ex.response["Error"]["Message"])
 
-    return Response(body=json.dumps({"message": "email sent"}))
+    return Response[str](data="email sent")
