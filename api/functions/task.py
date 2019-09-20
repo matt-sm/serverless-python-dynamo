@@ -39,7 +39,3 @@ def update(event: Event, context: Any) -> Response:
     response = Response({"statusCode": 200, "body": json.dumps(asdict(task))})
 
     return response
-
-
-def createDb(event: Event) -> TaskDb:
-    return TaskDb("IS_OFFLINE" in event)

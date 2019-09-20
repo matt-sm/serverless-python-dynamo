@@ -4,59 +4,49 @@ import uuid
 from datetime import datetime
 from dataclasses import dataclass, asdict
 from dacite import from_dict
+from pydantic import BaseModel
+
 
 @dataclass
 class Task:
-     id: str = str(uuid.uuid1())
-     status: str = 'created'
-     createdAt: str = str(datetime.utcnow().timestamp())
-     updatedAt: str = ''
+    id: str = str(uuid.uuid1())
+    status: str = "created"
+    createdAt: str = str(datetime.utcnow().timestamp())
+    updatedAt: str = ""
 
-     def __post_init__(self):
-        if self.updatedAt == '':
+    def __post_init__(self):
+        if self.updatedAt == "":
             self.updatedAt = self.createdAt
 
 
 class TaskDb(object):
     def __init__(self, isOffline: bool):
         if isOffline:
-            dynamodb = boto3.resource('dynamodb', endpoint_url='http://localhost:8000/')
+            dynamodb = boto3.resource("dynamodb", endpoint_url="http://localhost:8000/")
         else:
-            dynamodb = boto3.resource('dynamodb')
+            dynamodb = boto3.resource("dynamodb")
 
-        self.table = dynamodb.Table(os.environ['TASK_DYNAMODB_TABLE'])
-    
+        self.table = dynamodb.Table(os.environ["TASK_DYNAMODB_TABLE"])
+
     def create(self) -> Task:
         task = Task()
         self.table.put_item(Item=asdict(task))
         return task
 
     def get(self, id: int) -> Task:
-        result = self.table.get_item(
-            Key={
-                'id': id
-            }
-        )
+        result = self.table.get_item(Key={"id": id})
 
-        return from_dict(data_class=Task, data=result['Item'])
+        return from_dict(data_class=Task, data=result["Item"])
 
     def update(self, id: int, status: str) -> Task:
         timestamp = str(datetime.utcnow().timestamp())
 
         result = self.table.update_item(
-            Key={
-                'id': id
-            },
-            ExpressionAttributeNames={
-                '#task_status': 'status',
-            },
-            ExpressionAttributeValues={
-            ':status': status,
-            ':updatedAt': timestamp,
-            },
-            UpdateExpression='SET #task_status = :status, ' 
-                                'updatedAt = :updatedAt',
-            ReturnValues='ALL_NEW',
+            Key={"id": id},
+            ExpressionAttributeNames={"#task_status": "status"},
+            ExpressionAttributeValues={":status": status, ":updatedAt": timestamp},
+            UpdateExpression="SET #task_status = :status, " "updatedAt = :updatedAt",
+            ReturnValues="ALL_NEW",
         )
 
-        return from_dict(data_class=Task, data=result['Attributes'])
+        return from_dict(data_class=Task, data=result["Attributes"])
