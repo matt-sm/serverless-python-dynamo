@@ -1,25 +1,18 @@
 import os
-import boto3
 import uuid
 from datetime import datetime
-from dataclasses import dataclass, asdict
-from dacite import from_dict
+import boto3
 from pydantic import BaseModel
 
 
-@dataclass
-class Task:
+class Task(BaseModel):
     id: str = str(uuid.uuid1())
     status: str = "created"
     createdAt: str = str(datetime.utcnow().timestamp())
     updatedAt: str = ""
 
-    def __post_init__(self):
-        if self.updatedAt == "":
-            self.updatedAt = self.createdAt
 
-
-class TaskDb(object):
+class TaskDb:
     def __init__(self, isOffline: bool):
         if isOffline:
             dynamodb = boto3.resource("dynamodb", endpoint_url="http://localhost:8000/")
@@ -30,23 +23,22 @@ class TaskDb(object):
 
     def create(self) -> Task:
         task = Task()
-        self.table.put_item(Item=asdict(task))
+        task.updatedAt = task.createdAt
+        self.table.put_item(Item=task.dict())
         return task
 
-    def get(self, id: int) -> Task:
-        result = self.table.get_item(Key={"id": id})
+    def get(self, id_: int) -> Task:
+        result = self.table.get_item(Key={"id": id_})
+        return Task(**result["Item"])
 
-        return from_dict(data_class=Task, data=result["Item"])
-
-    def update(self, id: int, status: str) -> Task:
+    def update(self, id_: int, status: str) -> Task:
         timestamp = str(datetime.utcnow().timestamp())
 
         result = self.table.update_item(
-            Key={"id": id},
+            Key={"id": id_},
             ExpressionAttributeNames={"#task_status": "status"},
             ExpressionAttributeValues={":status": status, ":updatedAt": timestamp},
             UpdateExpression="SET #task_status = :status, " "updatedAt = :updatedAt",
             ReturnValues="ALL_NEW",
         )
-
-        return from_dict(data_class=Task, data=result["Attributes"])
+        return Task(**result["Attributes"])

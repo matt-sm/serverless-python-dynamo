@@ -1,41 +1,24 @@
-import json
-import boto3
-import logging
-from api.db.task import Task, TaskDb
-from dataclasses import dataclass, asdict
-from typing import Any, Dict, NewType
-from botocore.exceptions import ClientError
-from api.functions import Event, Response
+from pydantic import BaseModel
+from api.functions import Request, api
+from api.db.task import Task
 
 
-def create(event: Event, context: Any) -> Response:
-    db = createDb(event)
-    task = db.create()
-
-    response = Response({"statusCode": 200, "body": json.dumps(asdict(task))})
-
-    return response
+class TaskRequest(BaseModel):
+    status: str
 
 
-def get(event: Event, context: Any) -> Response:
-    db = createDb(event)
-    task = db.get(event["pathParameters"]["id"])
-
-    response = Response({"statusCode": 200, "body": json.dumps(asdict(task))})
-
-    return response
+@api
+def create(request: Request) -> Task:
+    return request.db.create()
 
 
-def update(event: Event, context: Any) -> Response:
-    data = json.loads(event["body"])
-    if "status" not in data:
-        logging.error("Missing request body field: status")
-        raise Exception("Task update failed.")
-        return
+@api
+def get(request: Request) -> Task:
+    return request.db.get(request.params["id"])
 
-    db = createDb(event)
-    task = db.update(event["pathParameters"]["id"], data["status"])
 
-    response = Response({"statusCode": 200, "body": json.dumps(asdict(task))})
+@api
+def update(request: Request) -> Task:
+    task_request = TaskRequest(**request.body)
 
-    return response
+    return request.db.update(request.params["id"], task_request.status)
