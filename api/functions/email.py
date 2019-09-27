@@ -1,36 +1,8 @@
-import boto3
-from pydantic import BaseModel
 from api.functions import Request, api
-
-
-class EmailSender(BaseModel):
-    name: str
-    email: str
-
-
-class EmailRequest(BaseModel):
-    sender: EmailSender
-    recipient: str
-    text: str
-    subject: str
+from api.db.email import Email, EmailRequest, send_email
 
 
 @api
-def send(request: Request) -> str:
+def send(request: Request) -> Email:
     email_request = EmailRequest(**request.body)
-
-    sender = f"{email_request.sender.name} <{email_request.sender.email}>"
-    charset = "UTF-8"
-
-    client = boto3.client("ses", region_name="us-east-1")
-
-    client.send_email(
-        Destination={"ToAddresses": [email_request.recipient]},
-        Message={
-            "Body": {"Text": {"Charset": charset, "Data": email_request.text}},
-            "Subject": {"Charset": charset, "Data": email_request.subject},
-        },
-        Source=sender,
-    )
-
-    return "email sent"
+    return send_email(email_request)
