@@ -1,4 +1,3 @@
-import os
 from pydantic import BaseModel
 from api.functions import Request, http_handler
 from api.db.task import Task, TaskDb
@@ -8,7 +7,7 @@ class TaskRequest(BaseModel):
     status: str
 
 
-DB = TaskDb(os.environ["IS_OFFLINE"])
+DB = TaskDb()
 
 
 @http_handler
