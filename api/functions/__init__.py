@@ -6,8 +6,6 @@ from typing import TypeVar, Generic, Optional
 from pydantic import BaseModel, ValidationError
 from api.db.task import TaskDb, Task
 
-DataT = TypeVar("DataT")
-
 
 class Request(BaseModel):
     body: dict
@@ -39,6 +37,6 @@ def http_handler(func):
             return {"statusCode": 400, "body": '{"data": ' + ex.json() + "}"}
         except Exception as ex:
             print(traceback.format_exc())
-            return {"statusCode": 500, "body": json.dumps({"data": str(ex)})}
+            return {"statusCode": 500, "body": json.dumps({"data": "An error occured"})}
 
     return wrapper_decorator
