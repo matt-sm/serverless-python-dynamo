@@ -1,24 +1,28 @@
+import os
 from pydantic import BaseModel
-from api.functions import Request, api
-from api.db.task import Task
+from api.functions import Request, http_handler
+from api.db.task import Task, TaskDb
 
 
 class TaskRequest(BaseModel):
     status: str
 
 
-@api
+DB = TaskDb(os.environ["IS_OFFLINE"])
+
+
+@http_handler
 def create(request: Request) -> Task:
-    return request.db.create()
+    return DB.create()
 
 
-@api
+@http_handler
 def get(request: Request) -> Task:
-    return request.db.get(request.params["id"])
+    return DB.get(request.params["id"])
 
 
-@api
+@http_handler
 def update(request: Request) -> Task:
     task_request = TaskRequest(**request.body)
 
-    return request.db.update(request.params["id"], task_request.status)
+    return DB.update(request.params["id"], task_request.status)
