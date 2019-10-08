@@ -18,6 +18,7 @@ curl -X POST localhost:3000/tasks
 ```
 ## run tests
 ```
+export TEST_EMAIL=<verified email>
 serverless offline start
 pytest
 ```
