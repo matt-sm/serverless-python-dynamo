@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from api.request import Request, http_handler
-from api.services.task import Task, taskdb
+from api.services.task_repository import Task, task_repository
 
 
 class TaskRequest(BaseModel):
@@ -9,15 +9,16 @@ class TaskRequest(BaseModel):
 
 @http_handler
 def create(request: Request) -> Task:  # pylint: disable=unused-argument
-    return taskdb.create()
+    data = {"test": "data"}
+    return task_repository.create(data)
 
 
 @http_handler
 def get(request: Request) -> Task:
-    return taskdb.get(request.params["id"])
+    return task_repository.get(request.params["id"])
 
 
 @http_handler
 def update(request: Request) -> Task:
     task_request = TaskRequest(**request.body)
-    return taskdb.update(request.params["id"], task_request.status)
+    return task_repository.update(request.params["id"], task_request.status)

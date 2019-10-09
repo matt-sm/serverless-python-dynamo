@@ -1,24 +1,9 @@
 import boto3
-from pydantic import BaseModel
-
-
-class EmailSender(BaseModel):
-    name: str
-    email: str
-
-
-class EmailRequest(BaseModel):
-    sender: EmailSender
-    recipient: str
-    text: str
-    subject: str
-
-
-class Email(BaseModel):
-    messageId: str
+from api.services.models import Email, EmailRequest
 
 
 def send_email(request: EmailRequest) -> Email:
+    print(request)
     sender = f"{request.sender.name} <{request.sender.email}>"
     charset = "UTF-8"
 

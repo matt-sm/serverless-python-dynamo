@@ -9,12 +9,22 @@ provider:
 
   environment:
     TASK_DYNAMODB_TABLE: ${self:service}-task-${opt:stage, self:provider.stage}
+    TASK_QUEUE: ${self:service}-task-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:*      
       Resource: 
         - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TASK_DYNAMODB_TABLE}"
+    - Effect: "Allow"
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl"
+      Resource: "arn:aws:sqs:${opt:region, self:provider.region}:*:${self:provider.environment.TASK_QUEUE}"
+    - Effect: "Allow"
+      Action:
+        - "ses:SendEmail"
+      Resource: "*"
 
 functions:
   createTask:
@@ -74,7 +84,7 @@ resources:
     TaskQueue:
           Type: "AWS::SQS::Queue"
           Properties:
-            QueueName: "TaskQueue"
+            QueueName: ${self:provider.environment.TASK_QUEUE}
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
