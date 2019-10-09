@@ -8,8 +8,8 @@ from pydantic import BaseModel
 class Task(BaseModel):
     id: str = str(uuid.uuid1())
     status: str = "created"
-    createdAt: str = str(datetime.utcnow().timestamp())
-    updatedAt: str = ""
+    created_at: str = str(datetime.utcnow().timestamp())
+    updated_at: str = ""
 
 
 class TaskDb:
@@ -23,7 +23,7 @@ class TaskDb:
 
     def create(self) -> Task:
         task = Task()
-        task.updatedAt = task.createdAt
+        task.updated_at = task.created_at
         self.table.put_item(Item=task.dict())
         return task
 
@@ -37,8 +37,11 @@ class TaskDb:
         result = self.table.update_item(
             Key={"id": id_},
             ExpressionAttributeNames={"#task_status": "status"},
-            ExpressionAttributeValues={":status": status, ":updatedAt": timestamp},
-            UpdateExpression="SET #task_status = :status, " "updatedAt = :updatedAt",
+            ExpressionAttributeValues={":status": status, ":updated_at": timestamp},
+            UpdateExpression="SET #task_status = :status, " "updated_at = :updated_at",
             ReturnValues="ALL_NEW",
         )
         return Task(**result["Attributes"])
+
+
+taskdb = TaskDb()  # pylint: disable=invalid-name

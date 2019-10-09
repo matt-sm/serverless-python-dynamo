@@ -1,10 +1,7 @@
 import functools
 import json
 import traceback
-import os
-from typing import TypeVar, Generic, Optional
 from pydantic import BaseModel, ValidationError
-from api.db.task import TaskDb, Task
 
 
 class Request(BaseModel):
@@ -35,7 +32,7 @@ def http_handler(func):
         except ValidationError as ex:
             print(traceback.format_exc())
             return {"statusCode": 400, "body": '{"data": ' + ex.json() + "}"}
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-except
             print(traceback.format_exc())
             return {"statusCode": 500, "body": json.dumps({"data": "An error occured"})}
 

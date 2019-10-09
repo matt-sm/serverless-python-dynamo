@@ -19,4 +19,4 @@ def test_task():
     body = json.loads(response.text)["data"]
     assert response.status_code == 200
     assert body["status"] == "processing"
-    assert body["createdAt"] != body["updatedAt"]
+    assert body["created_at"] != body["updated_at"]

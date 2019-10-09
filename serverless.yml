@@ -18,35 +18,35 @@ provider:
 
 functions:
   createTask:
-    handler: api/functions/task.create
+    handler: api/handlers/task.create
     events:
       - http:
           path: tasks
           method: post
           cors: true
   getTask:
-    handler: api/functions/task.get
+    handler: api/handlers/task.get
     events:
       - http:
           path: tasks/{id}
           method: get
           cors: true
   updateTask:
-    handler: api/functions/task.update
+    handler: api/handlers/task.update
     events:
       - http:
           path: tasks/{id}
           method: put
           cors: true
   sendEmail:
-    handler: api/functions/email.send
+    handler: api/handlers/email.send
     events:
       - http:
           path: email/send
           method: post
           cors: true
   hello:
-    handler: api/functions/compute.hello
+    handler: api/handlers/compute.hello
     events:
       - sqs:
           arn:

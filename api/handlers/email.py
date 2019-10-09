@@ -1,5 +1,5 @@
-from api.functions import Request, http_handler
-from api.db.email import Email, EmailRequest, send_email
+from api.request import Request, http_handler
+from api.services.email import Email, EmailRequest, send_email
 
 
 @http_handler
