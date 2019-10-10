@@ -1,14 +1,6 @@
-from pydantic import BaseModel
-from api.request import Request, http_handler
-from api.services.task_repository import Task, task_repository
-
-
-class TaskCreateRequest(BaseModel):
-    data: dict
-
-
-class TaskUpdateRequest(BaseModel):
-    status: str
+from api.decorators import http_handler
+from api.models import Request, Task, TaskCreateRequest, TaskUpdateRequest
+from api.services.task_repository import task_repository
 
 
 @http_handler

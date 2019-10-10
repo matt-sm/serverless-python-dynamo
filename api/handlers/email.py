@@ -1,5 +1,5 @@
-from api.request import Request, http_handler
-from api.services.models import Task, EmailRequest
+from api.decorators import http_handler
+from api.models import Request, Task, EmailRequest
 from api.services.task_repository import task_repository
 from api.services.emailer import send_email
 from api.services.queue import queue_message

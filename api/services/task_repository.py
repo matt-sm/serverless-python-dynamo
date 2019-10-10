@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 import boto3
-from api.services.models import Task
+from api.models import Task
 
 
 class TaskRepository:

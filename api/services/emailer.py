@@ -1,5 +1,5 @@
 import boto3
-from api.services.models import Email, EmailRequest
+from api.models import Email, EmailRequest
 
 
 def send_email(request: EmailRequest) -> Email:

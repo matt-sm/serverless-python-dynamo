@@ -2,14 +2,7 @@ import functools
 import json
 import traceback
 from pydantic import BaseModel, ValidationError
-
-
-class Request(BaseModel):
-    body: dict
-    params: dict
-
-    class Config:
-        arbitrary_types_allowed = True
+from api.models import Request
 
 
 def http_handler(func):
