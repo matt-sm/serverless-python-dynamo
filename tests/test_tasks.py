@@ -5,7 +5,7 @@ import requests
 
 def test_task():
     os.environ["TASK_DYNAMODB_TABLE"] = "serverless-python-dynamo-task-dev"
-    response = requests.post("http://localhost:3000/tasks")
+    response = requests.post("http://localhost:3000/tasks", data='{"data": {"foo": "bar"}}')
     task = json.loads(response.text)["data"]
 
     response = requests.get(f"http://localhost:3000/tasks/{task['id']}")

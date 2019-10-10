@@ -14,4 +14,4 @@ def test_task():
     body = json.loads(response.text)["data"]
     print(body)
     assert response.status_code == 200
-    assert "messageId" in body
+    assert body["status"] == "created"
