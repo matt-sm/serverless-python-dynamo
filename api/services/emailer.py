@@ -3,7 +3,6 @@ from api.models import Email, EmailRequest
 
 
 def send_email(request: EmailRequest) -> Email:
-    print(request)
     sender = f"{request.sender.name} <{request.sender.email}>"
     charset = "UTF-8"
 

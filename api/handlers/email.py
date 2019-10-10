@@ -14,7 +14,6 @@ def send(request: Request) -> Task:
 
 
 def process(event, context):  # pylint: disable=unused-argument
-    print(event)
     for record in event["Records"]:
         task = task_repository.update(record["body"], "processing")
         send_email(EmailRequest(**task.data))

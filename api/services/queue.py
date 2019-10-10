@@ -10,5 +10,4 @@ def queue_message(message: str):
 
     queue = sqs.get_queue_by_name(QueueName=os.environ["TASK_QUEUE"])  # pylint: disable=no-member
 
-    response = queue.send_message(MessageBody=message)
-    print(response.get("MessageId"))
+    queue.send_message(MessageBody=message)
