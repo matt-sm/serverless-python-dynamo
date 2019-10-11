@@ -1,5 +1,5 @@
 # serverless-python-dynamo
-A python api built with the serverless framework that utilizes api gateway, lambda, dynamodb and streams.
+A python api built with the serverless framework that utilizes api gateway, lambda, dynamodb and sqs.
 ## local dev
 ```
 # serverless offline dependencies
