@@ -5,6 +5,7 @@ import requests
 def test_task():
     response = requests.post("http://localhost:3000/tasks", data='{"data": {"foo": "bar"}}')
     task = json.loads(response.text)["data"]
+    assert response.status_code == 201
 
     response = requests.get(f"http://localhost:3000/tasks/{task['id']}")
     assert response.status_code == 200

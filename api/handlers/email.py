@@ -5,7 +5,7 @@ from api.services.emailer import send_email
 from api.services.queue import queue_message
 
 
-@http_handler
+@http_handler(status_code=202)
 def send(request: Request) -> Task:
     email_request = EmailRequest(**request.body)
     task = task_repository.create(email_request.dict())

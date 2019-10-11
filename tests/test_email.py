@@ -16,7 +16,7 @@ def test_email():
     )
 
     body = json.loads(response.text)["data"]
-    assert response.status_code == 200
+    assert response.status_code == 202
     assert body["status"] == "created"
     task_id = body["id"]
 
