@@ -19,3 +19,6 @@ def test_task():
     assert response.status_code == 200
     assert body["status"] == "processing"
     assert body["created_at"] != body["updated_at"]
+
+    response = requests.get("http://localhost:3000/tasks/invalid")
+    assert response.status_code == 404

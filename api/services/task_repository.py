@@ -21,6 +21,9 @@ class TaskRepository:
 
     def get(self, id_: int) -> Task:
         result = self.table.get_item(Key={"id": id_})
+        if "Item" not in result:
+            return None
+
         return Task(**result["Item"])
 
     def update(self, id_: int, status: str) -> Task:
